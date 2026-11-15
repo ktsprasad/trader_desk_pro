@@ -10,7 +10,7 @@ function css(v) {
 /**
  * data: /api/market/chart response. levels: {entry, stop, target}. show: {vwap, volume, or, ema}. markers: [{time, side, text}]
  */
-export default function PriceChart({ data, levels, show = { vwap: true, volume: true, or: true }, markers, height = 380, type = "candles" }) {
+export default function PriceChart({ data, levels, show = { vwap: true, volume: true, or: true }, markers, height = 380, type = "candles", visibleBars }) {
   const el = useRef(null);
   useEffect(() => {
     if (!el.current || !data?.bars?.length) return undefined;
@@ -59,6 +59,14 @@ export default function PriceChart({ data, levels, show = { vwap: true, volume: 
         chart.addLineSeries({ color, lineWidth: 1, priceLineVisible: false, lastValueVisible: false }).setData(pts.slice(n));
       });
     }
+    if (show.sma) {
+      [[50, "#79b8ff", "50-DMA"], [200, "#b392f0", "200-DMA"]].forEach(([n, color]) => {
+        let run = 0;
+        const pts = [];
+        bars.forEach((b, i) => { run += b.close; if (i >= n) run -= bars[i - n].close; if (i >= n - 1) pts.push({ time: b.time, value: run / n }); });
+        chart.addLineSeries({ color, lineWidth: 2, priceLineVisible: false, lastValueVisible: false }).setData(pts);
+      });
+    }
     if (show.or && data.opening_range) {
       [["high", "OR high"], ["low", "OR low"]].forEach(([k, t]) => main.createPriceLine({ price: data.opening_range[k],
         color: "#5b7cfa", lineStyle: LineStyle.Dotted, lineWidth: 1, axisLabelVisible: false, title: t }));
@@ -70,14 +78,17 @@ export default function PriceChart({ data, levels, show = { vwap: true, volume: 
       });
     }
     if (markers?.length && main.setMarkers) {
-      main.setMarkers(markers.map((m) => ({ time: m.time + IST, position: m.side === "BUY" ? "belowBar" : "aboveBar",
-        color: m.side === "BUY" ? "#2f7cf6" : "#e3863a", shape: m.side === "BUY" ? "arrowUp" : "arrowDown", text: m.text }))
+      // entries: blue up-arrow (buy) / orange down-arrow (sell); exits: green (profit) or red (loss) circle
+      main.setMarkers(markers.map((m) => (m.kind === "exit"
+        ? { time: m.time + IST, position: m.side === "BUY" ? "aboveBar" : "belowBar", color: m.win ? "#3fb950" : "#f0625a", shape: "circle", text: m.text }
+        : { time: m.time + IST, position: m.side === "BUY" ? "belowBar" : "aboveBar", color: m.side === "BUY" ? "#2f7cf6" : "#e3863a",
+          shape: m.side === "BUY" ? "arrowUp" : "arrowDown", text: m.text }))
         .sort((a, b) => a.time - b.time));
     }
-    const visible = Math.min(bars.length, type === "line" ? bars.length : 120);
+    const visible = Math.min(bars.length, type === "line" ? bars.length : (visibleBars || 120));
     chart.timeScale().setVisibleLogicalRange({ from: bars.length - visible, to: bars.length + 3 });
     return () => chart.remove();
-  }, [data, levels?.entry, levels?.stop, levels?.target, show.vwap, show.volume, show.or, show.ema, markers, type, height]);
+  }, [data, levels?.entry, levels?.stop, levels?.target, show.vwap, show.volume, show.or, show.ema, show.sma, markers, type, height, visibleBars]);
   if (!data?.bars?.length) return <div className="empty" style={{ height }}>No bars for this symbol.</div>;
   return <div ref={el} className="chartbox" style={{ height }} />;
 }

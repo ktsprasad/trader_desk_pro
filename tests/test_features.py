@@ -229,3 +229,12 @@ def test_assistant_without_key_explains(client, monkeypatch):
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
     s = client.get("/api/assistant/settings").json()
     assert s["key_set"] is False and s["model"] == "claude-sonnet-5-5"
+
+
+def test_money_export_csv_for_a_month(client):
+    client.post("/api/money/expenses", json={"on": "2026-11-10", "merchant": "Cafe", "category": "Food delivery", "amount": 250})
+    r = client.get("/api/money/export?month=2026-11")
+    assert r.status_code == 200 and "expenses-2026-11.csv" in r.headers["content-disposition"]
+    assert "Cafe" in r.text and "-250" in r.text
+    assert client.get("/api/money/export").status_code == 200
+    assert client.get('/api/money/export?month=2026-11";x').status_code == 422     # no header injection

@@ -41,7 +41,7 @@ open you create the owner account. For UI development, run `npm run dev` in `fro
 Tests:
 
 ```bat
-.venv\Scripts\python -m pytest tests                    :: 112 tests
+.venv\Scripts\python -m pytest tests                    :: 139 tests
 cd skills\day-trader && ..\..\.venv\Scripts\python -m pytest tests -p no:cacheprovider   :: the 315 day-trader tests
 ```
 
@@ -115,6 +115,12 @@ tests/                   backend tests
 SQLite (`data/traderdesk.db`) is the default database. Set `TDP_DATABASE_URL` to use Postgres
 (`docker-compose.yml`).
 
+## Market data
+
+Real time from Kite's quote API while the day's Kite login is valid (prices, today's candle, screeners,
+futures and option OI). Otherwise delayed: Yahoo prices and NSE's end-of-day F&O file. The top bar shows
+**Live · Kite** or **Delayed data**, and each panel names its source.
+
 ## Connectors
 
 | Connector | How | Trades |
@@ -131,17 +137,18 @@ Read-only connectors stay read-only until order placement is verified on a live 
 
 ## Testing
 
-`.venv\Scripts\python -m pytest tests` runs 112 tests: unit, API, connectors and security (sign-in on
+`.venv\Scripts\python -m pytest tests` runs 139 tests: unit, API, connectors and security (sign-in on
 every route, roles, CSRF, origin, secrets never returned, path traversal, login throttling, hostile
 input). Load (50 concurrent users) and browser end-to-end runs are in SETUP.md, "Testing".
 
 ## Not built yet
 
 - Order placement through Dhan, Upstox, INDstocks and crypto (they connect read-only).
-- Live tick streaming (needs the Kite Connect plan); charts refresh from delayed bars instead.
+- Kite tick streaming and Kite intraday candles. Prices are real time from Kite quotes when logged in; 1m to 15m candles stay delayed (Yahoo).
 - Bill detection from email, PDF statement parsing for metals, contract-note parsing and matching.
 - Gmail API sign-in with Google's read-only scope (email uses IMAP with an app password today).
-- FII/DII flows, PCR/OI and GIFT Nifty in the brief (no free source; marked "no free source").
+- FII/DII flows, intraday OI and GIFT Nifty (no free source). End-of-day PCR, OI walls and OI flow are on
+  the Market pulse page, from NSE's free F&O bhavcopy.
 - An LLM step inside the brief pipeline (the AI assistant itself works with an Anthropic API key).
 - Telegram, email and calendar reminders (bills remind in the app only).
 - Passkeys and Google sign-in; the strategy research lab; automatic order execution (by design, never).

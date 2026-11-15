@@ -11,7 +11,7 @@ import uuid
 from datetime import date, datetime, timedelta
 from typing import Any
 
-from fastapi import Depends, HTTPException, Request
+from fastapi import Depends, HTTPException, Query, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 from sqlalchemy import func, select
@@ -427,7 +427,8 @@ def register(app, c) -> None:
         return {"ok": True}
 
     @app.get("/api/money/export")
-    def money_export(month: str | None = None, info=Depends(need("money:read"))):
+    def money_export(month: str | None = Query(None, pattern=r"^\d{4}-\d{2}$"), info=Depends(need("money:read"))):
+        month = month or today().strftime("%Y-%m")
         rows = expenses(month, info)
         buf = io.StringIO()
         w = csv.DictWriter(buf, fieldnames=["on", "merchant", "category", "amount", "account", "source", "note"],
@@ -435,7 +436,7 @@ def register(app, c) -> None:
         w.writeheader()
         w.writerows(rows)
         return StreamingResponse(iter([buf.getvalue()]), media_type="text/csv",
-                                 headers={"Content-Disposition": f'attachment; filename="expenses-{month or today():%Y-%m}.csv"'})
+                                 headers={"Content-Disposition": f'attachment; filename="expenses-{month}.csv"'})
 
     def bill_row(b: Bill) -> dict:
         d = (b.due.date() - today()).days

@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { api, cls, inr, istToday, signed } from "../api.js";
+import { api, cls, inr, istToday, monthOf, signed } from "../api.js";
 import { COLORS, Card, Empty, Msg, Tabs, useAction } from "../ui.jsx";
 
-const monthOf = (offset) => { const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() + offset); return d.toISOString().slice(0, 7); };
 const short = (d) => new Date(d + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short" });
 
 function Donut({ parts }) {

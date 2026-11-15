@@ -194,6 +194,13 @@ class KiteBroker:
                          orders=orders)
         return GttAck(str(res.get("trigger_id")))
 
+    def quote(self, keys: list[str]) -> dict[str, dict]:
+        """Full quote (last price, day OHLC with previous close, volume, OI) for up to 500 instruments."""
+        return self._call("quotes", self.kite.quote, keys)
+
+    def instruments(self, exchange: str = "NFO") -> list[dict]:
+        return self._call("quotes", self.kite.instruments, exchange)
+
     def ltp(self, keys: list[str]) -> dict[str, float]:
         res = self._call("quotes", self.kite.ltp, keys)
         return {k: float(v["last_price"]) for k, v in res.items()}

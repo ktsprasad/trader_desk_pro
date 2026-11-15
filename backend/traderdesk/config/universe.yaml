@@ -1,0 +1,43 @@
+# Stock lists for Market pulse. Edit freely: NSE symbols as on Kite. A symbol that cannot be read is listed
+# as "not read" on the page, never guessed. Your signals watchlist is always added to the screeners.
+#
+# sectors: drives the sector money-flow monitor (and every stock here is also screened).
+# pulse:   extra stocks for the screeners only.
+# Larger lists take longer on the first load (daily bars are cached for 10 minutes; with Kite live they
+# refresh every 20 seconds in one batched quote call).
+
+sectors:
+  IT: [TCS, INFY, HCLTECH, WIPRO, TECHM, LTTS, PERSISTENT, COFORGE, MPHASIS]
+  Banks: [HDFCBANK, ICICIBANK, SBIN, KOTAKBANK, AXISBANK, INDUSINDBK, BANKBARODA, PNB, CANBK, FEDERALBNK, IDFCFIRSTB, AUBANK]
+  NBFC: [BAJFINANCE, BAJAJFINSV, SHRIRAMFIN, CHOLAFIN, MUTHOOTFIN, JIOFIN, PFC, RECLTD]
+  Insurance: [HDFCLIFE, SBILIFE, ICICIPRULI, ICICIGI, LICI]
+  Capital markets: [BSE, CDSL, MCX, ANGELONE, HDFCAMC, CAMS]
+  Auto: [MARUTI, M&M, BAJAJ-AUTO, EICHERMOT, HEROMOTOCO, TVSMOTOR, ASHOKLEY, BOSCHLTD]
+  FMCG: [HINDUNILVR, ITC, NESTLEIND, BRITANNIA, TATACONSUM, DABUR, GODREJCP, MARICO, COLPAL]
+  Pharma: [SUNPHARMA, CIPLA, DRREDDY, DIVISLAB, LUPIN, TORNTPHARM, APOLLOHOSP, MAXHEALTH]
+  Metals: [TATASTEEL, JSWSTEEL, HINDALCO, VEDL, SAIL, NMDC, JINDALSTEL, NATIONALUM]
+  Oil & gas: [RELIANCE, ONGC, IOC, BPCL, GAIL, HINDPETRO, OIL]
+  Power: [NTPC, POWERGRID, TATAPOWER, ADANIPOWER, NHPC, JSWENERGY]
+  Cement: [ULTRACEMCO, GRASIM, SHREECEM, AMBUJACEM, ACC, DALBHARAT]
+  Capital goods: [LT, SIEMENS, ABB, BHEL, CGPOWER, CUMMINSIND, POLYCAB, HAVELLS]
+  Defence: [BEL, HAL, BDL, MAZDOCK]
+  Telecom: [BHARTIARTL, IDEA, INDUSTOWER]
+  Consumer: [TITAN, TRENT, ASIANPAINT, DMART, PIDILITIND, VOLTAS]
+  New-age: [ETERNAL, NYKAA, PAYTM, POLICYBZR, NAUKRI]
+  Realty: [DLF, GODREJPROP, LODHA, OBEROIRLTY, PRESTIGE]
+  Infra & logistics: [ADANIPORTS, ADANIENT, CONCOR, IRCTC, INDIGO, GMRAIRPORT]
+  Chemicals: [SRF, PIIND, UPL, DEEPAKNTR]
+
+pulse: []
+
+# Crypto & Gold tab (Yahoo symbols; Indian ETFs use Kite live prices when logged in).
+assets:
+  - {symbol: GOLD, name: "Gold (COMEX, $/oz)", exchange: US}
+  - {symbol: SILVER, name: "Silver (COMEX, $/oz)", exchange: US}
+  - {symbol: USDINR, name: "USD / INR", exchange: US}
+  - {symbol: GOLDBEES, name: "Nippon Gold BeES (NSE)", exchange: NSE}
+  - {symbol: SILVERBEES, name: "Nippon Silver BeES (NSE)", exchange: NSE}
+  - {symbol: BTC-USD, name: "Bitcoin ($)", exchange: US}
+  - {symbol: ETH-USD, name: "Ethereum ($)", exchange: US}
+  - {symbol: SOL-USD, name: "Solana ($)", exchange: US}
+  - {symbol: BRENT, name: "Brent crude ($/bbl)", exchange: US}

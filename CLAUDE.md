@@ -37,7 +37,7 @@ This app can place real orders with real money. These rules hold for every chang
 
 ```bat
 start.bat                                              :: set up on first run, then serve on :8766
-.venv\Scripts\python -m pytest tests                   :: backend tests (112, incl. tests/test_security.py)
+.venv\Scripts\python -m pytest tests                   :: backend tests (139, incl. tests/test_security.py)
 .venv\Scripts\python -m pytest tests\test_desk.py -k oco
 cd skills\day-trader && ..\..\.venv\Scripts\python -m pytest tests -p no:cacheprovider   :: skill tests (315)
 cd frontend && npm run dev                             :: UI dev server :5173, proxies /api to :8766
@@ -60,8 +60,17 @@ backend/traderdesk/
                        signals, briefs, providers, the scheduler thread (off when a clock is injected)
   app/wealth_api.py    register(app, ctx): portfolio overview, metals, tax, money, dashboards, users,
                        sessions, AI assistant (read-only tools, claude-sonnet-5-5 via the anthropic SDK)
-  market/yahoo.py      MarketData(fetch=...): delayed bars/quotes; tests pass a fake fetch
-  analysis/            strategies.py (ORB, VWAP, backtest, regime, pivots), brief.py (pre/post market)
+  app/pulse_api.py     Market pulse: /api/pulse/screener, liquidity, oi-flow, options (503 when NSE is unreachable)
+  market/yahoo.py      MarketData(fetch=...): delayed bars/quotes; tests pass a fake fetch; md.live overlays
+                       real-time Kite quotes (last price, today's daily candle) when Kite is logged in
+  market/live.py       LiveQuotes(adapter_fn): batched Kite quote/instruments (<=500 per call, 2 s cache),
+                       status() for the top-bar Live/Delayed badge; never invent a price on failure
+  market/nse_fo.py     NSE F&O bhavcopy (UDiFF, end of day): FoBhavcopy(fetch=...), oi_flow, option_pulse;
+                       tests set app.state.fo_fetch
+  analysis/            strategies.py (ORB, VWAP, backtest, regime, pivots), brief.py (pre/post market),
+                       pulse.py (RSI, MFI, ATR, squeeze, swing/liquidity levels, screener rows),
+                       chart_signals.py (buy/exit marks by style + back-test; no look-ahead; /api/market/signals)
+  config/universe.yaml Market pulse lists (data, not code): sectors (money-flow monitor), pulse, assets
   tax/engine.py        compute() from config/tax.yaml; orders/pnl.py FIFO realised P/L
   core/models.py       domain dataclasses + enums (OrderRequest.fingerprint() binds the confirm)
   core/auth.py         Argon2, TOTP, ROLES -> permissions, SessionStore
@@ -131,5 +140,5 @@ Notes about how the skills fit Trader Desk Pro go in `skills/README.md`.
 ## Not built yet
 
 Order placement through the read-only connectors, contract-note parsing, live tick streaming, PDF
-import for metals, Gmail API OAuth (email is IMAP + app password), FII/DII and OI data, the LLM step in the brief pipeline, non-app reminders, passkeys. The
+import for metals, Gmail API OAuth (email is IMAP + app password), FII/DII data and intraday OI (Market pulse has end-of-day OI from the NSE bhavcopy), the LLM step in the brief pipeline, non-app reminders, passkeys. The
 full list is in README.md → "Not built yet".

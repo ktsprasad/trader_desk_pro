@@ -81,7 +81,7 @@ builds it again.
 .venv\Scripts\python -m pytest tests
 ```
 
-You should see `112 passed`.
+You should see `139 passed`.
 
 ## 3. Create the owner account
 
@@ -125,6 +125,22 @@ sign in on Zerodha's page, and you are sent back to the app with the account con
 the top bar is green while the token is valid and red when you need to log in again.
 
 The app does not store your Zerodha password or TOTP, and it does not log in automatically.
+
+**Real-time data comes from this login.** While the day's Kite login is valid, the top bar shows
+**Live · Kite**. These then come from Kite's quote API in real time:
+
+- every price and day change, and today's candle on daily charts;
+- the Market pulse screeners (refreshed every 20 s);
+- futures OI flow and the option chain OI (refreshed every 30 s).
+
+Today's OI change is the live OI minus NSE's last end-of-day figure.
+
+Without the login, the badge reads **Delayed data**. Prices then come from Yahoo (delayed), and OI comes
+from NSE's file of the last trading day; each panel says which source it used.
+
+Kite's quote API needs market data enabled on your Kite Connect app. If Kite refuses, the badge says
+why and the app stays on delayed data. Intraday candles (1m to 15m) stay on Yahoo even when prices are
+live: Kite's historical candles and the live tick stream are not wired in yet.
 
 ### 4d. Optional: the Kite MCP server (Kite inside Claude)
 
@@ -380,7 +396,8 @@ lists who is signed in and lets you sign a session out.
 | Screen | What it does | Needs |
 | --- | --- | --- |
 | **Desk** | Today's brief, index quotes, armed plans, accounts (cash, margin), positions across brokers with stop/target/R and Exit, open orders, alerts. On a phone: Flatten intraday and Kill switch at the bottom. | — |
-| **Charts** | Candles / line / Heikin-Ashi, 1m to 1W, VWAP, opening range, EMA, signal markers. Templates: Intraday ORB, Swing, Index dashboard, Relative strength, Portfolio, Metals. | delayed feed |
+| **Charts** | Candles / line / Heikin-Ashi, 1m to 1W, VWAP, opening range, EMA, signal markers. **Buy / exit signals** by style: Intraday (ORB or VWAP, 5m, exit at 2R target, stop or 15:15), Swing (pullback to 20-DMA, daily, 2R / stop / 10 days), Long-term (50/200-DMA trend, daily over 10 years, exit on two closes below the 200-DMA) and Options (the intraday signal as an at-the-money CE or PE, strike step from NSE). Each shows entries and exits on the chart, what the rule says now, its back-test (trades, win %, total vs buy and hold) and the rules; an active signal opens a pre-filled ticket you confirm. Templates: Intraday ORB, Swing, Index dashboard, Relative strength, Portfolio, Metals. | delayed feed |
+| **Market pulse** | Nine tabs. **Money Flow**: a sector money-flow monitor (about 130 stocks in 20 sectors: ₹ cr flowing in or out per sector, top inflow and outflow stocks, breadth, a one-line headline and, with Kite live data, surge rates in ₹ cr per minute), then MFI and turnover vs the 20-day average per stock. **Crypto & Gold**: gold, silver, USD/INR, gold and silver ETFs, Bitcoin, Ether, Solana and Brent with 1-month and 1-year returns, RSI and gold/silver parity in ₹. **Option Pulse**: PCR, max pain, call/put OI walls, OI by strike, most active contracts, for any F&O symbol and expiry. **Stock Radar**: 52-week-high breakouts, pullbacks, volume surges, squeezes, gaps. **Calm Zone**: India VIX, regime checklist, volatility-squeeze stocks. **Liquidity Map**: untaken swing highs/lows, previous day/week levels, 52-week range and option OI walls for one symbol. **OI Flow**: long/short buildup, short covering, long unwinding across all F&O futures. **RSI Screener**: daily and weekly RSI(14) with filters. **F&O Academy**: short lessons. Edit the stock list in `backend/traderdesk/config/universe.yaml` (your watchlist is always added). Analysis only. | Yahoo daily bars; NSE's free end-of-day F&O file (published each evening, so options and OI are as of the last trading day) |
 | **Algo signals** | Market regime score, opening-range breakout and VWAP strategies scanning your watchlist every 5 minutes (09:20 to 14:35), back-test odds, a 5-check discipline gate and **Open pre-filled ticket**. Never sends orders by itself. | delayed feed |
 | **Trade** | Chart with entry/stop/target lines next to the order ticket: product, order type, trigger, OCO stop and target, live max loss and reward:risk, then the risk check and typed confirm. | — |
 | **Options** | Option chain (Kite Connect plan) and a strategy builder with presets, payoff at expiry, max profit/loss and breakevens. **Review and place** makes one ticket per leg, buys first. | chain: Kite Connect plan |
@@ -474,7 +491,7 @@ uses this computer.
 
 | Kind | How | Last result |
 | --- | --- | --- |
-| Unit, API, connectors, security | `.venv\Scripts\python -m pytest tests` | 112 passed |
+| Unit, API, connectors, security | `.venv\Scripts\python -m pytest tests` | 139 passed |
 | Skills | in `skills\day-trader`: `..\..\.venv\Scripts\python -m pytest tests -p no:cacheprovider` | 315 passed |
 | Dependencies | `npm audit` (frontend), `pip-audit` (venv) | UI 0; backend: autobahn via kiteconnect (unused ticker code) |
 | Load | 50 signed-in users for 45 s on a test server | about 110 req/s, 0 server errors |

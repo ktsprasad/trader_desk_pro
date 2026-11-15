@@ -5,6 +5,7 @@ import { api, inr, num } from "./api.js";
 const P = {
   desk: "M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z",
   charts: "M3 3v18h18M7 15l4-4 3 3 5-6",
+  pulse: "M2 12h4l3-8 4 16 3-8h6",
   signals: "M12 3 2 20h20L12 3zm0 6v5m0 3v.5",
   trade: "M7 7h13l-3-3M17 17H4l3 3",
   options: "M4 6h16M4 12h16M4 18h16M9 3v18",

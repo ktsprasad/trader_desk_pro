@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { api, cls, inr, signed } from "../api.js";
+import { api, cls, inr, monthOf, signed } from "../api.js";
 import { COLORS, Card, Empty, Msg, useAction } from "../ui.jsx";
 
 const WIDGETS = {
@@ -8,7 +8,7 @@ const WIDGETS = {
   charges_month: ["Charges this month", "KPI"], equity_curve: ["Equity curve", "Chart"], nifty: ["NIFTY intraday", "Chart"],
   open_positions: ["Open positions", "List"], spend_by_category: ["Spend by category", "Bars"], signals: ["Today's signals", "List"],
 };
-const month = () => new Date().toISOString().slice(0, 7);
+const month = () => monthOf(0);
 
 function useWidgetData(type, allowed) {
   const on = (k) => type === k;

@@ -29,7 +29,7 @@ from ..portfolio.importer import import_snapshots, latest_snapshot
 from ..portfolio.networth import summarise
 from ..core.models import Holding
 from ..market.yahoo import MarketData
-from . import connectors_api, trading_api, wealth_api
+from . import connectors_api, pulse_api, trading_api, wealth_api
 from types import SimpleNamespace
 
 log = logging.getLogger("traderdesk")
@@ -148,6 +148,20 @@ def create_app(db_url: str | None = None, secrets: SecretStore | None = None,
                     log.error("account %s (%s) failed to start: %s", acct.id, acct.plugin, e)
 
     md = market or MarketData()
+
+    def _kite_live():
+        """The first Kite account whose daily login is fresh, or None (then data is delayed)."""
+        for a in list(adapters.values()):
+            if getattr(a, "name", "") == "kite" and hasattr(a, "quote"):
+                try:
+                    if a.session_status().get("connected"):
+                        return a
+                except Exception:
+                    continue
+        return None
+
+    from ..market.live import LiveQuotes
+    md.live = LiveQuotes(_kite_live)
 
     def _fallback_price(exchange: str, symbol: str) -> float | None:
         if exchange not in ("NSE", "BSE"):
@@ -642,6 +656,7 @@ def create_app(db_url: str | None = None, secrets: SecretStore | None = None,
                 "risk_budget_left": round(max(0.0, (rules.get("max_daily_loss") or 0) - today.loss_at_risk), 2),
                 "trades_today": today.entries_placed, "max_trades": rules.get("max_trades_per_day"),
                 "accounts": [{"id": a["id"], "name": a["name"], "connected": a["connected"]} for a in accts],
+                "data": md.live.status() if md.live else {"live": False, "reason": "Delayed"},
                 "user": {"username": info.username, "role": info.role}}
 
     # ------------------------------------------------------------ the other screens
@@ -651,6 +666,7 @@ def create_app(db_url: str | None = None, secrets: SecretStore | None = None,
     trading_api.register(app, ctx)
     wealth_api.register(app, ctx)
     connectors_api.register(app, ctx)
+    pulse_api.register(app, ctx)
 
     # ------------------------------------------------------------ frontend
     dist = Path(os.environ.get("TDP_FRONTEND_DIST", ROOT / "frontend" / "dist"))

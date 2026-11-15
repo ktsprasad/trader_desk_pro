@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { api, cls, inr, num, signed } from "../api.js";
+import { api, cls, inr, monthOf, num, signed } from "../api.js";
 import { COLORS, Card, Empty, Seg } from "../ui.jsx";
 
 const LABEL = { brokerage: "Brokerage", stt: "STT", exchange_txn: "Exchange transaction", sebi: "SEBI fee", stamp: "Stamp duty", gst: "GST", dp: "DP charges" };
-const months = () => Array.from({ length: 12 }, (_, i) => { const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - i); return d.toISOString().slice(0, 7); });
+const months = () => Array.from({ length: 12 }, (_, i) => monthOf(-i));
 
 export default function Charges() {
   const [seg, setSeg] = useState("eq_intraday");

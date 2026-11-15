@@ -11,7 +11,7 @@ export default function Trade({ params, go }) {
   const [input, setInput] = useState(symbol);
   const [iv, setIv] = useState("5m");
   const accounts = useQuery({ queryKey: ["accounts"], queryFn: () => api("/accounts") });
-  const chart = useQuery({ queryKey: ["chart", symbol, iv], queryFn: () => api(`/market/chart?symbol=${encodeURIComponent(symbol)}&interval=${iv}`), refetchInterval: 60000, retry: false });
+  const chart = useQuery({ queryKey: ["chart", symbol, iv], queryFn: () => api(`/market/chart?symbol=${encodeURIComponent(symbol)}&interval=${iv}`), refetchInterval: (qq) => (qq.state.data?.live ? 5000 : 60000), retry: false });
   const odds = useQuery({ queryKey: ["odds", symbol], queryFn: () => api(`/market/odds?symbol=${encodeURIComponent(symbol)}`), retry: false });
   const [f, setF] = useState({ side: params.side || "BUY", kind: "EQ", account: "paper", product: "MIS", order_type: "LIMIT", quantity: params.qty || 1,
     trigger_price: "", price: params.entry || "", stop: params.stop || "", target: params.target || "", exchange: params.exchange || "NSE",

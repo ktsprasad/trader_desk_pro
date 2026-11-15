@@ -48,3 +48,10 @@ export const pct = (n, d = 2) => (n === null || n === undefined ? "—" : `${n >
 export const hm = (iso) => (iso ? new Date(iso).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Kolkata" }) : "");
 
 export const istToday = () => new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
+// "YYYY-MM" of the IST month `offset` months from now. Never toISOString(): that is UTC, and the 1st of a
+// month at midnight IST is still the previous month in UTC.
+export const monthOf = (offset = 0) => {
+  const [y, m] = istToday().split("-").map(Number);
+  const t = y * 12 + (m - 1) + offset;
+  return `${Math.floor(t / 12)}-${String((t % 12) + 1).padStart(2, "0")}`;
+};

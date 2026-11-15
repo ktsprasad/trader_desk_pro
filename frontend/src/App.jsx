@@ -5,6 +5,7 @@ import { Icon, Modal } from "./ui.jsx";
 import Desk from "./screens/Desk.jsx";
 import Charts from "./screens/Charts.jsx";
 import Signals from "./screens/Signals.jsx";
+import Pulse from "./screens/Pulse.jsx";
 import Trade from "./screens/Trade.jsx";
 import OrderBook from "./screens/OrderBook.jsx";
 import Options from "./screens/Options.jsx";
@@ -23,13 +24,13 @@ import UsersAudit from "./screens/UsersAudit.jsx";
 const OWNER_ONLY = new Set(["users", "providers"]);
 const PERMS = {
   owner: null,
-  trader: ["desk", "charts", "signals", "trade", "orders", "options", "briefs", "portfolio", "charges", "dash", "ai", "conn"],
-  viewer: ["desk", "charts", "briefs", "portfolio", "dash", "ai", "conn"],
+  trader: ["desk", "charts", "pulse", "signals", "trade", "orders", "options", "briefs", "portfolio", "charges", "dash", "ai", "conn"],
+  viewer: ["desk", "charts", "pulse", "briefs", "portfolio", "dash", "ai", "conn"],
   accountant: ["portfolio", "tax", "charges", "dash", "ai"],
   family: ["expenses", "bills", "dash"],
 };
 export const NAV = [
-  ["Trading", [["desk", "Desk", "desk"], ["charts", "Charts", "charts"], ["signals", "Algo signals", "signals"],
+  ["Trading", [["desk", "Desk", "desk"], ["charts", "Charts", "charts"], ["pulse", "Market pulse", "pulse"], ["signals", "Algo signals", "signals"],
     ["trade", "Trade", "trade"], ["orders", "Order book", "book"], ["options", "Options", "options"], ["briefs", "Briefs", "briefs"]]],
   ["Wealth", [["portfolio", "Portfolio", "portfolio"], ["metals", "Digital metals", "metals"], ["tax", "Tax centre", "tax"],
     ["charges", "Charges", "charges"]]],
@@ -38,7 +39,7 @@ export const NAV = [
   ["Settings", [["conn", "Connections", "conn"], ["providers", "Analysis providers", "prov"], ["users", "Users and audit", "users"]]],
 ];
 const GROUP = Object.fromEntries(NAV.flatMap(([g, items]) => items.map(([id, label]) => [id, [g, label]])));
-const SCREENS = { desk: Desk, charts: Charts, signals: Signals, trade: Trade, orders: OrderBook, options: Options,
+const SCREENS = { desk: Desk, charts: Charts, pulse: Pulse, signals: Signals, trade: Trade, orders: OrderBook, options: Options,
   briefs: Briefs, portfolio: Portfolio, metals: Metals, tax: Tax, charges: Charges, expenses: Money, bills: Money,
   dash: Dashboards, ai: Assistant, conn: Connections, providers: Providers, users: UsersAudit };
 
@@ -180,6 +181,9 @@ function TopBar({ screen, user, go, next, openSearch, openMenu, openAlerts, allo
       <div className="chips">
         {b && (trading || screen === "desk") && <>
           <span className="chip"><span className={`dot ${b.nse_open ? "on" : "amber"}`} />NSE {b.nse_open ? "open" : "closed"} · {b.ist.slice(11, 16)} IST</span>
+          {b.data && <span className="chip" title={b.data.reason} style={{ cursor: b.data.live ? "default" : "pointer" }}
+            onClick={() => { if (!b.data.live) window.location.hash = "#/conn"; }}>
+            <span className={`dot ${b.data.live ? "on" : "amber"}`} />{b.data.live ? "Live · Kite" : "Delayed data"}</span>}
           <span className="chip hide-m">New York {b.ny}</span>
           {allowed("desk") && <span className="chip hide-m">Day P/L <b className={dayPnl > 0 ? "gain" : dayPnl < 0 ? "loss" : ""}>{signed(dayPnl)}</b></span>}
           <span className="chip hide-m">Risk left <b>{inr(b.risk_budget_left)}</b></span>

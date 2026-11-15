@@ -126,7 +126,8 @@ def register(app, c) -> None:
             raise HTTPException(502, f"market data unavailable for {symbol}: {e}")
         bars = d["bars"]
         out = {"symbol": d["symbol"], "currency": d["currency"], "last": d["last"], "prev_close": d["prev_close"],
-               "bars": [b.to_dict() for b in bars], "source": "Yahoo Finance (delayed)"}
+               "bars": [b.to_dict() for b in bars], "source": d.get("source", "Yahoo Finance (delayed)"),
+               "live": bool(d.get("live"))}
         if interval in ("1m", "5m", "15m") and bars:
             day = bars[-1].ist().date().isoformat()
             sess = st.sessions(bars).get(day, [])

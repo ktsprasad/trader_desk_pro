@@ -61,6 +61,8 @@ class MarketData:
         self.ttl = ttl
         self._cache: dict[tuple, tuple[float, object]] = {}
         self._lock = threading.Lock()
+        self._inflight: dict[tuple, threading.Lock] = {}
+        self.live = None        # market.live.LiveQuotes: real-time overlay when Kite is logged in
 
     @staticmethod
     def _http(sym: str, params: dict) -> dict:
@@ -70,15 +72,21 @@ class MarketData:
         return r.json()
 
     def _cached(self, key, fn):
-        now = time.monotonic()
+        """One download per key at a time: a second caller for the same key waits and reuses the result."""
         with self._lock:
             hit = self._cache.get(key)
-            if hit and now - hit[0] < self.ttl:
+            if hit and time.monotonic() - hit[0] < self.ttl:
                 return hit[1]
-        val = fn()
-        with self._lock:
-            self._cache[key] = (now, val)
-        return val
+            key_lock = self._inflight.setdefault(key, threading.Lock())
+        with key_lock:
+            with self._lock:
+                hit = self._cache.get(key)
+                if hit and time.monotonic() - hit[0] < self.ttl:
+                    return hit[1]
+            val = fn()
+            with self._lock:
+                self._cache[key] = (time.monotonic(), val)
+            return val
 
     def chart(self, symbol: str, interval: str = "5m", range_: str | None = None, exchange: str = "NSE") -> dict:
         iv, default_range = INTERVALS.get(interval, (interval, "5d"))
@@ -105,19 +113,51 @@ class MarketData:
                     "prev_close": meta.get("chartPreviousClose") or meta.get("previousClose"),
                     "bars": bars}
 
-        return self._cached((ysym, params["interval"], params["range"]), load)
+        d = self._cached((ysym, params["interval"], params["range"]), load)
+        return self._with_live(d, symbol, exchange, params["interval"])
+
+    def _live_quote(self, symbol: str, exchange: str) -> dict | None:
+        if self.live is None:
+            return None
+        try:
+            q = self.live.get(symbol, exchange)
+        except Exception:
+            return None
+        return q if q and q.get("last") is not None else None
+
+    def _with_live(self, d: dict, symbol: str, exchange: str, iv: str) -> dict:
+        q = self._live_quote(symbol, exchange)
+        if not q:
+            return {**d, "live": False, "source": "Yahoo Finance (delayed)"}
+        from .live import overlay_daily
+        out = {**d, "last": q["last"], "live": True, "live_at": q["at"]}
+        if iv == "1d":
+            out["bars"] = overlay_daily(d["bars"], q)
+            out["source"] = "Kite (real-time)"
+        else:
+            out["source"] = "Kite price (real-time) · intraday candles Yahoo (delayed)"
+        return out
 
     def quote(self, symbol: str, exchange: str = "NSE") -> dict:
-        """Last price and change vs the previous daily close."""
+        """Last price and change vs the previous daily close (real-time from Kite when logged in)."""
+        q = self._live_quote(symbol, exchange)
+        if q and q.get("prev_close"):
+            return {"symbol": symbol.upper(), "last": q["last"], "prev_close": q["prev_close"], "change_pct": q["change_pct"],
+                    "currency": "INR", "live": True, "at": q["at"]}
         d = self.chart(symbol, "1d", "10d", exchange)
         bars = d["bars"]
         last = d["last"] if d["last"] is not None else (bars[-1].c if bars else None)
         prev = bars[-2].c if len(bars) >= 2 else d["prev_close"]
         chg = ((last - prev) / prev * 100) if last is not None and prev else None
         return {"symbol": d["symbol"], "last": last, "prev_close": prev, "change_pct": chg,
-                "currency": d["currency"]}
+                "currency": d["currency"], "live": bool(d.get("live"))}
 
     def quotes(self, symbols: list[str]) -> dict[str, dict]:
+        if self.live is not None:
+            try:
+                self.live.prefetch(symbols)      # one batched Kite call instead of one per symbol
+            except Exception:
+                pass
         out = {}
         for s in symbols:
             try:
