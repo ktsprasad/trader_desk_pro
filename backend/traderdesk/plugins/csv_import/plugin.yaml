@@ -1,0 +1,9 @@
+id: csv
+name: Holdings CSV / contract notes
+kind: import
+entry: traderdesk.plugins.csv_import.adapter:CsvImport
+markets: [ANY]
+assets: [equity, etf, mutual_fund, us_stock]
+capabilities: [READ]
+auth: { type: upload }
+settings_schema: ./settings.schema.json

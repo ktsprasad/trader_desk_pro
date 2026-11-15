@@ -1,0 +1,11 @@
+{ "type": "object", "title": "Email inbox (IMAP)", "required": ["username"],
+  "properties": {
+    "provider": { "type": "string", "title": "Provider", "enum": ["Gmail", "Outlook / Hotmail / Microsoft 365", "Yahoo", "Zoho (India)", "Zoho", "iCloud", "Rediffmail", "AOL", "Other (enter IMAP host)"], "default": "Gmail" },
+    "username": { "type": "string", "title": "Email address" },
+    "password": { "type": "string", "title": "App password (not your normal password)", "secret": true },
+    "host": { "type": "string", "title": "IMAP host (only for Other)" },
+    "port": { "type": "integer", "title": "IMAP port", "default": 993 },
+    "folder": { "type": "string", "title": "Folder", "default": "INBOX" },
+    "lookback_days": { "type": "integer", "title": "Scan the last N days", "default": 30 },
+    "senders": { "type": "string", "title": "Only these senders (comma-separated, optional)" }
+  } }

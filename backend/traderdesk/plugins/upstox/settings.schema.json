@@ -1,0 +1,6 @@
+{ "type": "object", "title": "Upstox", "required": ["api_key"],
+  "properties": {
+    "api_key": { "type": "string", "title": "API key (client_id)" },
+    "api_secret": { "type": "string", "title": "API secret", "secret": true },
+    "redirect_uri": { "type": "string", "title": "Redirect URL", "default": "http://127.0.0.1:8766/api/brokers/upstox/callback" }
+  } }

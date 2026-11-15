@@ -1,0 +1,2 @@
+{ "type": "object", "title": "CAS (CAMS / KFintech)", "properties": {
+    "pan_hint": { "type": "string", "title": "Label (optional, e.g. whose CAS)" } } }

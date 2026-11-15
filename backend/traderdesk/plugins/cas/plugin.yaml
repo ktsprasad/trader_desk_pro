@@ -1,0 +1,9 @@
+id: cas
+name: CAS + AMFI NAV (mutual funds)
+kind: import
+entry: traderdesk.plugins.cas.adapter:CasImport
+markets: [MF]
+assets: [mutual_fund]
+capabilities: [READ, MF]
+auth: { type: upload }
+settings_schema: ./settings.schema.json

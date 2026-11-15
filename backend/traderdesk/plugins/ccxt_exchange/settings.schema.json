@@ -1,0 +1,6 @@
+{ "type": "object", "title": "Crypto exchange (CCXT)", "required": ["exchange"],
+  "properties": {
+    "exchange": { "type": "string", "title": "Exchange", "enum": ["binance", "coinbase", "kraken", "kucoin", "okx", "bybit", "coindcx", "wazirx"], "default": "binance" },
+    "api_key": { "type": "string", "title": "API key (read-only key)" },
+    "api_secret": { "type": "string", "title": "API secret", "secret": true }
+  } }

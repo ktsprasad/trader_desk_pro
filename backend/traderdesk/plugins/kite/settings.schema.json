@@ -1,0 +1,12 @@
+{
+  "type": "object",
+  "title": "Zerodha Kite",
+  "required": ["api_key"],
+  "properties": {
+    "api_key": { "type": "string", "title": "API key" },
+    "api_secret": { "type": "string", "title": "API secret", "secret": true },
+    "client_id": { "type": "string", "title": "Client ID (optional, for display)" },
+    "plan": { "type": "string", "enum": ["personal", "connect"], "default": "personal",
+              "title": "Kite plan (Connect adds live ticks and historical data)" }
+  }
+}

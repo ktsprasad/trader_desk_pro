@@ -1,0 +1,10 @@
+id: ccxt
+name: Crypto exchange (CCXT)
+kind: aggregator
+entry: traderdesk.plugins.ccxt_exchange.adapter:CcxtExchange
+markets: [CRYPTO]
+assets: [crypto]
+capabilities: [READ]
+auth: { type: api_key }
+limits: { default_per_sec: 2 }
+settings_schema: ./settings.schema.json

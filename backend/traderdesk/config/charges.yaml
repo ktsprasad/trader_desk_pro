@@ -1,0 +1,44 @@
+# Versioned charges table: one entry per (broker, effective_from). The engine picks the newest
+# entry whose effective_from is on or before the trade date. A rule change is a new entry here,
+# not a code change. Percentages are fractions (0.001 = 0.1%).
+#
+# Checked against Zerodha's charges page and the Budget 2026 STT change as of 2026-11-15.
+# Exchange transaction charges are NSE's rates; verify before relying on them to the rupee.
+statutory:
+  - effective_from: 2024-10-01
+    stt:            { eq_delivery: {buy: 0.001, sell: 0.001}, eq_intraday: {sell: 0.00025},
+                      futures: {sell: 0.0002}, options: {sell: 0.001} }
+    exchange_txn:   { NSE: {eq_delivery: 0.0000297, eq_intraday: 0.0000297, futures: 0.0000173, options: 0.0003503},
+                      BSE: {eq_delivery: 0.0000375, eq_intraday: 0.0000375, futures: 0.0, options: 0.000325} }
+    sebi_per_crore: 10
+    stamp_buy:      { eq_delivery: 0.00015, eq_intraday: 0.00003, futures: 0.00002, options: 0.00003 }
+    gst:            0.18
+  - effective_from: 2026-04-01      # Budget 2026: STT raised on F&O
+    stt:            { eq_delivery: {buy: 0.001, sell: 0.001}, eq_intraday: {sell: 0.00025},
+                      futures: {sell: 0.0005}, options: {sell: 0.0015} }
+    exchange_txn:   { NSE: {eq_delivery: 0.0000297, eq_intraday: 0.0000297, futures: 0.0000173, options: 0.0003503},
+                      BSE: {eq_delivery: 0.0000375, eq_intraday: 0.0000375, futures: 0.0, options: 0.000325} }
+    sebi_per_crore: 10
+    stamp_buy:      { eq_delivery: 0.00015, eq_intraday: 0.00003, futures: 0.00002, options: 0.00003 }
+    gst:            0.18
+
+brokers:
+  kite:
+    - effective_from: 2024-10-01
+      brokerage:
+        eq_delivery: { flat: 0 }
+        eq_intraday: { pct: 0.0003, cap: 20 }     # 0.03% or Rs 20, whichever is lower
+        futures:     { pct: 0.0003, cap: 20 }
+        options:     { flat: 20 }
+      dp_charge_per_scrip_sell: 15.34             # incl. GST; delivery sells only, once per scrip per day
+  indstocks:
+    - effective_from: 2024-10-01
+      brokerage:
+        eq_delivery: { flat: 5 }
+        eq_intraday: { flat: 5 }
+        futures:     { flat: 5 }
+        options:     { flat: 5 }
+      dp_charge_per_scrip_sell: 0
+  paper:
+    - effective_from: 2024-10-01
+      same_as: kite

@@ -1,0 +1,15 @@
+id: paper
+name: Paper simulator
+kind: native
+entry: traderdesk.plugins.paper.adapter:PaperBroker
+markets: [NSE, BSE, NFO, BFO]
+assets: [equity, etf, future, option]
+capabilities: [READ, TRADE_EQ, TRADE_FO, GTT, OCO]
+auth: { type: none }
+limits: { orders_per_sec: 10 }
+requires_static_ip: false
+settings_schema:
+  type: object
+  properties:
+    starting_cash: { type: number, default: 500000, title: "Starting cash (INR)" }
+    slippage_ticks: { type: integer, default: 0, title: "Slippage on market orders (ticks)" }

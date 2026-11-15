@@ -1,0 +1,7 @@
+# NSE trading holidays, YYYY-MM-DD: name. Weekends are always closed.
+# The 07:30 data-refresh job is meant to fill this from the exchange; until then add the
+# year's list from nseindia.com (Resources > Exchange communication > Holidays) and add the
+# year to covered_years. While a year is not covered, the risk check warns that holidays are
+# not being checked.
+covered_years: []
+holidays: {}

@@ -1,0 +1,5 @@
+{ "type": "object", "title": "INDstocks",
+  "properties": {
+    "client_id": { "type": "string", "title": "API client ID (x-api-key, for TOTP login)" },
+    "access_token": { "type": "string", "title": "Access token (from indstocks.com API trading, 24 h)", "secret": true }
+  } }

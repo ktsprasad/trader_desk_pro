@@ -1,0 +1,5 @@
+{ "type": "object", "title": "Holdings CSV",
+  "properties": {
+    "source": { "type": "string", "title": "Source", "enum": ["INDmoney US", "INDstocks", "Kite Console", "Other broker"], "default": "Other broker" },
+    "currency": { "type": "string", "title": "Prices are in", "enum": ["INR", "USD"], "default": "INR" }
+  } }

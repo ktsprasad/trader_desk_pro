@@ -1,0 +1,9 @@
+id: email
+name: Email inbox (IMAP, any provider)
+kind: import
+entry: traderdesk.plugins.email_imap.adapter:EmailInbox
+markets: [ANY]
+assets: [expense, mutual_fund, equity]
+capabilities: [READ]          # opens the mailbox read-only (EXAMINE + BODY.PEEK); never sends, deletes or marks mail
+auth: { type: password }
+settings_schema: ./settings.schema.json

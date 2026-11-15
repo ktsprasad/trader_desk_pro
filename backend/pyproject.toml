@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "traderdesk"
+version = "0.1.0"
+description = "Trader Desk Pro: local-first portfolio, planning and order desk for Indian and US markets"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.30",
+  "sqlalchemy>=2.0",
+  "pydantic>=2.7",
+  "pyyaml>=6",
+  "keyring>=25",
+  "argon2-cffi>=23",
+  "pyotp>=2.9",
+  "httpx>=0.27",
+  "kiteconnect>=5.0",
+  "python-multipart>=0.0.9",
+  "tzdata>=2024.1",   # zoneinfo data on Windows
+  "anthropic>=0.75",  # AI assistant (read-only tools)
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+postgres = ["psycopg[binary]>=3.1"]
+cas = ["casparser>=0.7"]          # CAS PDF import
+crypto = ["ccxt>=4.0"]            # crypto exchange balances
+
+[project.scripts]
+traderdesk = "traderdesk.app.main:run"
+traderdesk-import = "traderdesk.cli:import_main"
+
+[tool.setuptools.packages.find]
+include = ["traderdesk*"]
+
+[tool.setuptools.package-data]
+traderdesk = ["config/*.yaml", "config/holidays/*.yaml", "plugins/*/plugin.yaml", "plugins/*/*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["../tests"]

@@ -1,0 +1,5 @@
+{ "type": "object", "title": "Dhan", "required": ["client_id"],
+  "properties": {
+    "client_id": { "type": "string", "title": "Dhan client ID" },
+    "access_token": { "type": "string", "title": "Access token (from web.dhan.co, 24 h)", "secret": true }
+  } }

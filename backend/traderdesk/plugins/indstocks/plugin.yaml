@@ -1,0 +1,11 @@
+id: indstocks
+name: INDstocks
+kind: native
+entry: traderdesk.plugins.indstocks.adapter:IndstocksBroker
+markets: [NSE, BSE, NFO, BFO]
+assets: [equity, etf, future, option]
+capabilities: [READ]
+auth: { type: token, daily_relogin: true }
+limits: { default_per_sec: 5 }
+requires_static_ip: true
+settings_schema: ./settings.schema.json

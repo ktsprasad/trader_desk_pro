@@ -1,0 +1,20 @@
+# Dated tax rules. Add a new entry for a new financial year; never edit an old one.
+# Estimates only, not tax advice. Check with a CA before filing.
+- fy: "2026-27"
+  starts: 2026-04-01
+  law: "Income Tax Act 2025"
+  equity_stcg: 0.20          # listed equity / equity MF held <= 12 months
+  equity_ltcg: 0.125         # above the exemption
+  ltcg_exemption: 125000
+  equity_lt_months: 12
+  foreign_lt_months: 24      # US stocks and other non-equity assets
+  foreign_ltcg: 0.125
+  vda: 0.30                  # crypto: flat, losses not set off
+  cess: 0.04
+  default_slab: 0.30
+  advance_tax:               # cumulative share of the year's tax due by each date
+    - { due: 2026-06-15, share: 0.15 }
+    - { due: 2026-09-15, share: 0.45 }
+    - { due: 2026-12-15, share: 0.75 }
+    - { due: 2027-03-15, share: 1.00 }
+  audit_turnover_limit: 100000000   # 10 crore when cash receipts/payments are <= 5%

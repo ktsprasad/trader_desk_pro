@@ -1,0 +1,11 @@
+id: dhan
+name: Dhan
+kind: native
+entry: traderdesk.plugins.dhan.adapter:DhanBroker
+markets: [NSE, BSE, NFO, BFO, MCX]
+assets: [equity, etf, future, option]
+capabilities: [READ]          # read-only until order placement is verified on a live account
+auth: { type: token, daily_relogin: true }
+limits: { default_per_sec: 5 }
+requires_static_ip: true       # for order APIs; reads do not need it
+settings_schema: ./settings.schema.json

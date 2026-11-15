@@ -1,0 +1,18 @@
+# Default risk rules (version 1). Changing a rule from Settings creates a new version and an
+# audit-log entry; a BLOCK cannot be overridden from the ticket.
+capital: 500000                 # INR the position-size % is measured against
+max_loss_per_trade: 2500        # INR at the stop
+max_daily_loss: 7500            # INR: today's entries' max losses plus this one
+max_trades_per_day: 5           # entries
+max_orders_per_day: 20
+max_position_pct: 20            # % of capital in one instrument after this order
+fno_exposure_cap: 300000        # INR notional across open F&O entries placed today
+min_reward_risk: 1.5
+require_stop: true
+allow_fo: true
+allow_short_intraday: true      # MIS shorts allowed; delivery (CNC) shorts never are
+no_entries_before: "09:20"      # IST
+no_entries_after: "15:10"
+no_new_mis_after: "15:00"
+expiry_day_no_new_fo_after: "13:30"
+blocked: []

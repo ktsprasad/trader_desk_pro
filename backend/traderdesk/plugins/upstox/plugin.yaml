@@ -1,0 +1,11 @@
+id: upstox
+name: Upstox
+kind: native
+entry: traderdesk.plugins.upstox.adapter:UpstoxBroker
+markets: [NSE, BSE, NFO, BFO, MCX]
+assets: [equity, etf, future, option]
+capabilities: [READ]
+auth: { type: oauth_redirect, daily_relogin: true }
+limits: { default_per_sec: 5 }
+requires_static_ip: true
+settings_schema: ./settings.schema.json

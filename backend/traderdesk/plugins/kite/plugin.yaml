@@ -1,0 +1,12 @@
+id: kite
+name: Zerodha Kite
+kind: native
+entry: traderdesk.plugins.kite.adapter:KiteBroker
+markets: [NSE, BSE, NFO, BFO, MCX, CDS]
+assets: [equity, etf, future, option, commodity, mutual_fund]
+capabilities: [READ, TRADE_EQ, TRADE_FO, GTT, OCO, MF, STREAM, HISTORY]
+auth: { type: oauth_redirect, daily_relogin: true }
+# Kite Connect limits: 10 orders/s (400/min, 5,000/day), quotes 1 req/s, historical 3 req/s
+limits: { orders_per_sec: 10, quotes_per_sec: 1, history_per_sec: 3, default_per_sec: 10 }
+requires_static_ip: true
+settings_schema: ./settings.schema.json
